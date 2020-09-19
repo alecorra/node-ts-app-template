@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dotenv from 'dotenv';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import mysql from 'mysql';
@@ -19,7 +20,7 @@ db.connect((err) => {
   if (err) {
     throw err;
   }
-  console.log('MySql connected...');
+  console.info('Database connected');
 });
 
 // Boot express
@@ -27,12 +28,11 @@ const app: Application = express();
 const port = process.env.APP_PORT;
 
 // Application routing
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.get('/', (req: Request, res: Response, next: NextFunction) => {
   res.status(200).send({ data: 'Hello World!' });
 });
 
-app.get('/create-table', (req, res) => {
+app.get('/create-table', (req: Request, res: Response, next: NextFunction) => {
   const sql = createTable;
   db.query(sql, (err) => {
     if (err) throw err;
@@ -40,7 +40,7 @@ app.get('/create-table', (req, res) => {
   });
 });
 
-app.get('/drop-table', (req, res) => {
+app.get('/drop-table', (req: Request, res: Response, next: NextFunction) => {
   const sql = dropTable;
   db.query(sql, (err) => {
     if (err) throw err;
@@ -48,10 +48,11 @@ app.get('/drop-table', (req, res) => {
   });
 });
 
-app.get('/populate-table', (req, res) => {
-  const body = 'This is the request body';
+app.post('/populate-table', (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.body);
+  const body = req.body;
   const now = new Date();
-  const values = { date: now.toString(), body: body };
+  const values = { date: now.toString(), body: body.toString() };
   const sql = 'INSERT INTO test SET ?';
   db.query(sql, values, (err) => {
     if (err) throw err;

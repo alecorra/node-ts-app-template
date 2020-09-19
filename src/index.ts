@@ -26,7 +26,7 @@ db.connect((err) => {
 
 // Boot express
 const app: Application = express();
-const port = process.env.APP_PORT;
+const port = process.env.APP_PORT || 8080;
 app.use(bodyParser.json()); // from express 4.x express.bodyParser() is no longer bundled
 
 // Application routing

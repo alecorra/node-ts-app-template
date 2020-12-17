@@ -3,9 +3,11 @@ import dotenv from 'dotenv';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import mysql from 'mysql';
 import mongoose from 'mongoose';
-import { createTable, dropTable } from './sql/scripts';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+
+import { createTable, dropTable } from './sql/scripts';
+import * as log from './utils/logs';
 
 // MongoDb model
 import { Post } from './models/Post';
@@ -26,23 +28,20 @@ db.connect((err) => {
   if (err) {
     throw err;
   }
-  console.log('SQL database connected');
+  log.ok('SQL database connected');
 });
 
 // Connect to mongoDb
-const dbName = process.env.DB_NAME;
-const dbUser = process.env.DB_USERNAME;
-const dbUserPassword = process.env.DB_USER_PASSWORD;
-const dbCluster = process.env.DB_CLUSTER;
-
-mongoose.connect(`mongodb+srv://${dbUser}:${dbUserPassword}@${dbCluster}/${dbName}?retryWrites=true&w=majority`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
-}, () => {
-  console.info('MongoDb connected');
-});
+if (process.env.MONGO_URI) {
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
+  })
+    .then(() => log.ok('MongoDB connected'))
+    .catch((err) => log.error(`MongoDB connection failed => ${err.message}`));
+}
 
 // Boot express
 const app: Application = express();
@@ -106,4 +105,4 @@ app.get('/mongo', async (req, res) => {
 });
 
 // Start server
-app.listen(port, () => console.log(`Server is listening on port ${port}`));
+app.listen(port, () => log.info(`Server is listening on port ${port}`));

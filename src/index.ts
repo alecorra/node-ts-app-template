@@ -20,7 +20,7 @@ const db = mysql.createConnection({
   host: process.env.SERVER,
   user: process.env.USERNAME,
   password: process.env.PASSWORD,
-  database: process.env.DATABASE
+  database: process.env.DATABASE,
 });
 
 // Connect DB
@@ -33,12 +33,13 @@ db.connect((err) => {
 
 // Connect to mongoDb
 if (process.env.MONGO_URI) {
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  })
+  mongoose
+    .connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    })
     .then(() => log.ok('MongoDB connected'))
     .catch((err) => log.error(`MongoDB connection failed => ${err.message}`));
 }
@@ -84,7 +85,7 @@ app.delete('/drop-table', (req: Request, res: Response, next: NextFunction) => {
 app.post('/mongo', async (req, res) => {
   const post = new Post({
     title: req.body.title,
-    description: req.body.description
+    description: req.body.description,
   });
 
   try {
